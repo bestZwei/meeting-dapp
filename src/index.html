@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会议报名DApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .status.success {
+            background-color: #c6f6d5;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .status.error {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .status.warning {
+            background-color: #fefcbf;
+            color: #744210;
+            border: 1px solid #f6e05e;
+        }
+
+        .conference-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .conference-item h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .conference-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .conference-info span {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #4a5568;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .account-info {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .account-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 会议报名DApp</h1>
+            <p>基于以太坊智能合约的去中心化会议报名系统</p>
+        </div>
+
+        <div id="accountInfo" class="account-info hidden">
+            <strong>当前账户:</strong>
+            <span id="currentAccount"></span>
+            <strong>余额:</strong>
+            <span id="accountBalance"></span> ETH
+        </div>
+
+        <div id="statusMessage" class="status hidden"></div>
+
+        <div class="grid">
+            <!-- 连接钱包 -->
+            <div class="card">
+                <h2>🔗 连接钱包</h2>
+                <button id="connectWallet" class="btn">连接MetaMask</button>
+                <p id="connectionStatus" class="loading hidden">正在连接...</p>
+            </div>
+
+            <!-- 用户注册 -->
+            <div class="card">
+                <h2>👤 用户注册</h2>
+                <div class="form-group">
+                    <label for="userName">用户姓名:</label>
+                    <input type="text" id="userName" placeholder="请输入您的姓名">
+                </div>
+                <button id="signUpBtn" class="btn">注册</button>
+            </div>
+
+            <!-- 管理员功能 -->
+            <div class="card" id="adminPanel">
+                <h2>⚙️ 管理员功能</h2>
+                <div class="form-group">
+                    <label for="conferenceName">会议名称:</label>
+                    <input type="text" id="conferenceName" placeholder="请输入会议名称">
+                </div>
+                <div class="form-group">
+                    <label for="maxParticipants">最大参与人数:</label>
+                    <input type="number" id="maxParticipants" placeholder="请输入最大参与人数" min="1">
+                </div>
+                <button id="createConferenceBtn" class="btn">创建会议</button>
+            </div>
+
+            <!-- 委托设置 -->
+            <div class="card">
+                <h2>🤝 委托设置</h2>
+                <div class="form-group">
+                    <label for="trusteeAddress">受托方地址:</label>
+                    <input type="text" id="trusteeAddress" placeholder="请输入受托方以太坊地址">
+                </div>
+                <button id="delegateBtn" class="btn">设置委托</button>
+            </div>
+
+            <!-- 委托报名 -->
+            <div class="card">
+                <h2>📝 委托报名</h2>
+                <div class="form-group">
+                    <label for="participantAddress">委托方地址:</label>
+                    <input type="text" id="participantAddress" placeholder="请输入委托方以太坊地址">
+                </div>
+                <div class="form-group">
+                    <label for="delegateConferenceId">选择会议:</label>
+                    <select id="delegateConferenceId">
+                        <option value="">请选择会议</option>
+                    </select>
+                </div>
+                <button id="enrollForBtn" class="btn">代理报名</button>
+            </div>
+        </div>
+
+        <!-- 可报名会议列表 -->
+        <div class="card">
+            <h2>📋 可报名会议列表</h2>
+            <button id="refreshConferencesBtn" class="btn btn-secondary">刷新列表</button>
+            <div id="conferencesList" class="loading">加载中...</div>
+        </div>
+
+        <!-- 我的报名会议 -->
+        <div class="card">
+            <h2>📌 我的报名会议</h2>
+            <button id="refreshMyConferencesBtn" class="btn btn-secondary">刷新我的会议</button>
+            <div id="myConferencesList" class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 引入Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

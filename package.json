@@ -1,0 +1,23 @@
+{
+  "name": "meeting-dapp",
+  "version": "1.0.0",
+  "description": "会议报名去中心化应用",
+  "main": "index.js",
+  "scripts": {
+    "test": "truffle test",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "dev": "truffle develop",
+    "console": "truffle console"
+  },
+  "keywords": ["blockchain", "ethereum", "solidity", "dapp"],
+  "author": "Student",
+  "license": "MIT",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "web3": "^1.10.4"
+  },
+  "devDependencies": {
+    "truffle": "^5.11.5"
+  }
+}
