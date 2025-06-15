@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-const Web3 = require('web3');
+require('dotenv').config({ path: '.env.local' });
+
+const { Web3 } = require('web3');
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const contractABI = require('../contracts/MeetingRegistration.json');
 
@@ -39,13 +41,12 @@ async function deployToSepolia() {
     const deployTx = contract.deploy({
       data: contractABI.bytecode
     });
-    
-    const gasEstimate = await deployTx.estimateGas({ from: accounts[0] });
+      const gasEstimate = await deployTx.estimateGas({ from: accounts[0] });
     console.log('⛽ 预估Gas:', gasEstimate);
     
     const deployedContract = await deployTx.send({
       from: accounts[0],
-      gas: Math.floor(gasEstimate * 1.2),
+      gas: Math.floor(Number(gasEstimate) * 1.2),
       gasPrice: '20000000000' // 20 gwei
     });
     
